@@ -9,7 +9,7 @@ use App\Http\Controllers\User\RegisterController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\ViewController;
 
-Route::post("notifications", [NotificationController::class, "index"]);
+Route::get("notifications", [NotificationController::class, "index"]);
 
 Route::prefix("admin")->group(function () {
     Route::post("register", [RegisterController::class, "index"]);
