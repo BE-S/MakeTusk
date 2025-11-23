@@ -1,0 +1,84 @@
+version: "3.3"
+
+services:
+    nginx:
+        image: nginx:latest
+        volumes:
+            - ./:/var/www
+            - ./_docker/nginx/conf.d:/etc/nginx/conf.d
+        ports:
+            - 8080:80
+        depends_on:
+            - app
+        container_name: nginx
+
+    app:
+        build:
+            context: .
+            dockerfile: _docker/app/Dockerfile
+        volumes:
+            - ./:/var/www
+        depends_on:
+            - db
+            - redis
+        container_name: app
+        environment:
+            - REDIS_HOST=redis
+
+    db:
+        image: postgres
+        restart: always
+        environment:
+            POSTGRES_USER: root
+            POSTGRES_PASSWORD: root
+            POSTGRES_DB: store
+        volumes:
+            - ./postgres_data:/tmp/lib/postgresql/data/
+        container_name: db
+
+    pgadmin:
+        container_name: pgadmin
+        image: dpage/pgadmin4
+        environment:
+            PGADMIN_DEFAULT_EMAIL: test@mail.ru
+            PGADMIN_DEFAULT_PASSWORD: root
+        ports:
+            - 5050:80
+
+    redis:
+        image: redis:latest
+        container_name: redis
+        environment:
+            - REDIS_PASSWORD=root
+            - REDIS_USER=root
+            - REDIS_USER_PASSWORD=root
+        ports:
+            - "6380:6379"
+        volumes:
+            - ./redis_data:/data
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.50'
+                    memory: 512M
+                reservations:
+                    cpus: '0.25'
+                    memory: 256M
+        healthcheck:
+            test: [ "CMD", "redis-cli", "-a", "$REDIS_PASSWORD", "ping" ]
+            interval: 30s
+            timeout: 10s
+            retries: 5
+        restart: unless-stopped
+        tty: true
+        stdin_open: true
+
+    redis-insight:
+        image: redis/redisinsight:latest
+        restart: always
+        ports:
+            - "5540:5540"
+
+volumes:
+  minio_data:
+
