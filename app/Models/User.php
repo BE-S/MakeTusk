@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        "job_hash",
+        "job_hash_created_at",
     ];
 
     /**
@@ -29,8 +31,10 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $hidden = [
-        'password',
-        'remember_token',
+        "password",
+        "remember_token",
+        "job_hash",
+        "job_hash_created_at",
     ];
 
     /**
